@@ -1,8 +1,14 @@
 
 class mcollective::install::debian {
-
-    package { "stomp":
+    package { "ruby":
+        ensure => installed,
+    }   
+    package { "rubygems":
+        ensure => installed,
+    }
+    package { "stomp": 
         provider => gem,
+        require => Package["ruby", "rubygems"],
         #ensure => "1.1",
     }
 
