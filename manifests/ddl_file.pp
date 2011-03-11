@@ -14,7 +14,10 @@ define mcollective::ddl_file ( $source ) {
         require => Class["mcollective::install"],
     }
 
-    file { "${p_base}/${title}": source => "${s_base}/${source}" }
+    file { "${p_base}/${title}": 
+	source => "${s_base}/${source}",
+	require => Package["mcollective"],
+    }
 
 }
 

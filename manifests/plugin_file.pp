@@ -13,8 +13,11 @@ define mcollective::plugin_file ( $source ) {
         mode  => 0444,
         require => Class["mcollective::install"],
         notify => Service["mcollective"],
+    } 
+    
+    file { "${p_base}/${title}": 
+		source => "${s_base}/${source}",
+		require => Package["mcollective"],
     }
-
-    file { "${p_base}/${title}": source => "${s_base}/${source}" }
 
 }

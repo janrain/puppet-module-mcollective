@@ -10,7 +10,10 @@ define mcollective::client_file ( $source, $prefix = "/usr/local" ) {
 
     $s_base = "puppet://$fileserver/mcollective/plugins"
 
-    file { "${prefix}/bin/${title}": source => "${s_base}/${source}" }
+    file { "${prefix}/bin/${title}": 
+	source => "${s_base}/${source}",
+	require => Package["mcollective"],
+    }
 
 }
 
