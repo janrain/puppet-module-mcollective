@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+
+
+# Client program for the mcollective puppetd agent found at http://code.google.com/p/mcollective-plugins/wiki/AgentPuppetd
+#
+# Released under the GPLv2
+
+require 'mcollective'
+
+include MCollective::RPC
+
+@force = false
+@rails_root = nil
+@action = nil
+@user = nil
+
+options = rpcoptions do |parser, options|
+    parser.define_head "Manage remote puppet daemons"
+    parser.banner = "Usage: mc-puppetd [enable|disable|runonce|status|count|runall] [concurrency]"
+
+    parser.separator ""
+    parser.separator "Run Options"
+    parser.on("-a", "--approot ROOT", "Root directory of the rails app") do |root|
+        options[:rails_root] = root
+    end
+
+    parser.on("-T","--touch", "Touch restart file in RAILS_ROOT/tmp (create tmp if dir is not there)") do
+        options[:action] = "touch"
+    end
+    parser.on( "-R", "--restart", "Restart Nginx") do
+        options[:action] = "restart"
+    end
+    parser.on("-u", "--user USER", "User (owner of RAILS_ROOT)") do |user|
+        options[:user] = user   
+    end
+end
+
+def print_response(response)
+    data = response[:data]
+    print "\tData: #{data[:output]}\n"  
+    print "\tRC: #{data[:rc]}\n"
+    return
+end
+
+if options[:action] == "touch"   
+    if options[:rails_root].nil? 
+        puts "Rails root is null. Set with --approot" 
+        exit 1
+    end
+    if options[:user].nil?
+        puts "User is null. set with --user"
+        exit 1
+    end
+    passenger = rpcclient("passenger", :options => options)
+    puts "Creating Passenger restart.txt file..."
+    rc=0
+    passenger.touchrestart( :user => options[:user],
+                            :action => options[:action],
+                            :rails_root => options[:rails_root] ).each do |response|
+                                rc=response[:data][:rc]
+                                result = rc == 0 ? "OK" : "FAILED"
+                                print " * #{response[:sender]}: #{result}\n"
+                                print_response response if passenger.verbose || rc != 0 
+    end
+    exit rc.to_i 
+end
+
+if options[:action] == "restart"
+    nginx = rpcclient("service", {:options => options})
+    puts "Restarting nginx..."
+    nginx.send("restart", {:service => "nginx"}).each do |response|
+        puts " * #{response[:sender]}: #{response[:statusmsg]}"
+        print_response response
+    end
+end
+
+
+

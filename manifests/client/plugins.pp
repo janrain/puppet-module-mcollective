@@ -7,5 +7,6 @@ class mcollective::client::plugins {
     include mcollective::plugin::process::client
     include mcollective::plugin::puppetd::client
     include mcollective::plugin::service::client
+    include mcollective::plugin::passenger::client
 }
 
