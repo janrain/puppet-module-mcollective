@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+
+
+# Client program for the mcollective puppetd agent found at http://code.google.com/p/mcollective-plugins/wiki/AgentPuppetd
+#
+# Released under the GPLv2
+
+require 'mcollective'
+require 'pp'
+include MCollective::RPC
+
+@force = false
+@rails_root = nil
+@action = nil
+@user = nil
+
+options = rpcoptions do |parser, options|
+    parser.define_head "Manage remote puppet daemons"
+    parser.banner = "Usage: mc-puppetd [enable|disable|runonce|status|count|runall] [concurrency]"
+
+    parser.separator ""
+    parser.separator "Run Options"
+    parser.on("-T", "--tag TAG", "Git tag") do |tag|
+        options[:tag] = tag
+    end
+
+    parser.on("-n","--nodetype TYPE", "Node type to update (worker, frontend)") do |type|
+        options[:node_type] = type
+    end
+
+    parser.on( "-e", "--environment ENV", "Rails environment") do |env|
+        options[:env] = env
+    end
+end
+
+def print_response(response)
+#    pp response
+    print "From: #{response[:sender]} -"
+    puts " OK" if response[:data][:rc] == 0
+    puts " FAILED" if response[:data][:rc] != 0
+
+    puts "\tResult: #{response[:data][:output]}"
+    if response[:data][:rc] != 0
+        puts "\tRC: #{response[:data][:rc]}"
+        puts "\tOutput: #{response[:statusmsg]}"
+    end
+    return
+end
+tag_update = rpcclient('lcars', :options => options)
+
+tag_update.updatetags( :tag => options[:tag],
+                       :env => options[:env],
+                       :node_type => options[:node_type]).each do |response|    
+    print_response response
+end
+
