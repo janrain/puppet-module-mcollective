@@ -1,5 +1,5 @@
 
 class mcollective::client::install {
-    package { "mcollective-client": ensure => present }
+    package { "mcollective-client": ensure => latest }
 }
 
