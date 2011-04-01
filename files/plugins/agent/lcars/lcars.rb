@@ -42,8 +42,10 @@ module MCollective
             private
             def updatetags
                 reply[:debug] = ""
+                reply[:rc] = 0
                 file = File.open('/tmp/test', 'w')
                 file.puts "Test"
+                restart_file = "/usr/share/puppet/rack/puppetmasterd/tmp/restart.txt"
                 node_file="/etc/puppet/manifests/analytics-nodes/"
                 case request[:env]
                     when 'production'
@@ -67,8 +69,8 @@ module MCollective
                         reply[:rc] = 1
                         reply.fail "Invalid node type"
                 end
+
                 reply[:node]="node: #{node_name}"
-                reply[:output]="HI"
                 if !File.exists?(node_file)
                     reply[:output] = "Could not locate node file @ #{node_file}"
                     reply[:rc] = 1
@@ -78,12 +80,13 @@ module MCollective
                 output=""
                 node_entry=""
                 reply[:debug] += "Opening file @ #{node_file}\n"
-
-                matched = true
+                datestamp = false
+                matched = false
                 File.open(node_file, "r") do |file|
                 while line = file.gets
                     if line.split[0] == '#' && line.split[1] == 'last_updated'
                         output << "# last_updated via MCollective - #{Time.now}\n"
+                        datestamp = true
                     elsif   line.split[0] == "node" && line.split[1] == "\"#{node_name}\""
                         node_entry += line
                         line=file.gets
@@ -96,23 +99,32 @@ module MCollective
                             end
                             line = file.gets
                         end
-                        puts node_entry
+                        node_entry << "}\n\n"
                         output << node_entry
                     else 
                         output << line
                     end
                 end
                 end
-                %x[cp #{node_file} /tmp/#{node_file}.old]
 
-                File.open("/tmp/new_nodes.pp", "w") do |file|
-                    file.puts output 
+                if reply[:rc] == 0
+                    %x[cp #{node_file} /tmp/#{node_file}.old]
+                    File.open(node_file, "w") do |file|
+                        file.puts "# last_updated via MCollective - #{Time.now}\n" if !datestamp
+                        file.puts output 
+                    end
+                    # Restart passenger.
+                    File.open(restart_file, "w") do |file|
+                        file.puts "Created by MCollective - #{Time.now}\n"
+                    end
+                    reply[:matched] = matched 
+                    reply[:output] = "Set tags in #{node_file}"
+                else
+                    reply[:output] = "Failed to set tags in #{node_file}"
                 end
-                reply[:matched] = matched 
-                reply[:rc] = 0
-                reply[:output] = "Set tags in #{node_file}"
             end
        end
     end
 end
 
+# vi:tabstop=4:expandtab:ai:filetype=ruby
