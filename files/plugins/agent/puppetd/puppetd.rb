@@ -4,10 +4,10 @@ module MCollective
             def startup_hook
                 meta[:license] = "Apache License 2.0"
                 meta[:author] = "R.I.Pienaar"
-                meta[:version] = "1.2"
+                meta[:version] = "1.2-sync"
                 meta[:url] = "http://mcollective-plugins.googlecode.com/"
-
-                @timeout = 20
+        		meta[:timeout] = 2000
+                @timeout = 2000
 
                 @splaytime = @config.pluginconf["puppetd.splaytime"].to_i || 0
                 @lockfile = @config.pluginconf["puppetd.lockfile"] || "/var/lib/puppet/state/puppetdlock"
@@ -30,7 +30,7 @@ module MCollective
             def status_action
                 status
             end
-
+            
             def metadata_action
                 reply[:facts] = PluginManager["facts_plugin"].get_facts
                 reply[:classes] = []
@@ -87,12 +87,12 @@ module MCollective
                 if File.exists?(@lockfile)
                     if File::Stat.new(@lockfile).zero?
                         reply[:output] = "Disabled, not running"
-		            else
+                    else
                         reply[:output] = "Enabled, running"
                         reply[:enabled] = 1
                         reply[:running] = 1
-		            end
-           	    else
+                    end
+                else
                         reply[:output] = "Enabled, not running"
                         reply[:enabled] = 1
                 end
@@ -102,18 +102,20 @@ module MCollective
             end
 
             def runonce
+                reply[:rc] = 0 
                 if File.exists?(@lockfile)
                     reply.fail "Lock file exists"
                 else
                     if request[:forcerun]
                         reply[:output] = %x[#{@puppetd} --onetime]
-
                     elsif @splaytime > 0
                         reply[:output] = %x[#{@puppetd} --onetime --splaylimit #{@splaytime} --splay]
-
+                    elsif request[:sync]
+            			reply[:output] = %x[#{@puppetd} --onetime --no-daemonize --detailed-exitcodes]
                     else
                         reply[:output] = %x[#{@puppetd} --onetime]
                     end
+			reply[:rc]=$?
                 end
             end
 

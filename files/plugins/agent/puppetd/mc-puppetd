@@ -9,7 +9,7 @@ require 'mcollective'
 include MCollective::RPC
 
 @force = false
-
+@sync = false
 options = rpcoptions do |parser, options|
     parser.define_head "Manage remote puppet daemons"
     parser.banner = "Usage: mc-puppetd [enable|disable|runonce|status|count|runall] [concurrency]"
@@ -19,6 +19,10 @@ options = rpcoptions do |parser, options|
 
     parser.on("--force", "-f", "Force the puppet run to happen immediately without splay") do
         @force = true
+    end
+
+    parser.on("--sync", "-s", "Run puppet, wait for completion and return exit code") do 
+        @sync = true
     end
 end
 
@@ -118,8 +122,17 @@ elsif command == "runall"
         exit 1
     end
 elsif command == "runonce"
-    printrpc puppetd.runonce(:forcerun => @force)
-
+    puppetd.runonce(:forcerun => @force, :sync => @sync).each do |response|
+        if @sync
+            puts "* On node #{response[:sender]}"        
+            print "\tReturned #{response[:data][:rc]}: "
+            puts "Success (No changes)" if response[:data][:rc] == 0
+            puts "Success (Changes)" if response[:data][:rc] == 512
+            puts "Failed (Errors)" if response[:data][:rc] == 1024
+        else 
+            printrpc response
+        end
+    end
     printrpcstats
 
 else

@@ -2,9 +2,9 @@ metadata    :name        => "SimpleRPC Puppet Agent",
             :description => "Agent to manage the puppet daemon",
             :author      => "R.I.Pienaar",
             :license     => "Apache License 2.0",
-            :version     => "1.3",
+            :version     => "1.3-sync",
             :url         => "http://mcollective-plugins.googlecode.com/",
-            :timeout     => 20
+            :timeout     => 120
 
 action "enable", :description => "Enables the Puppetd" do
     output :output,
