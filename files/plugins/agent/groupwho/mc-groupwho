@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 
-# Client program for the mcollective service agent found at http://code.google.com/p/mcollective-plugins/
-#
-# Released under the GPLv2
+# Client program for the mcollective groupwho agent. Pass it some group names to find out what
+# users they contain across mcollective managed nodes. 
 
 require 'mcollective'
 require 'pp'

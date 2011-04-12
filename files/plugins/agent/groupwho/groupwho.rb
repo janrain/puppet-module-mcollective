@@ -46,7 +46,6 @@ module MCollective
                 group=%x[cat /etc/group | grep #{group} | sed -e 's/:/ /g' | awk '{ print $4 }'].chomp
                 secondary_members = Array.new
                 group.split(",").each do |u|
-                #input.each do |u|
                     secondary_members << u
                 end
                 primary_members | secondary_members
