@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+# Client program for the mcollective service agent found at http://code.google.com/p/mcollective-plugins/
+#
+# Released under the GPLv2
+
+require 'mcollective'
+require 'pp'
+include MCollective::RPC
+
+options = rpcoptions do |parser, options|
+    parser.define_head "Query user group, get its users."
+    parser.banner = "Usage: mc-groupwho [options] group(s)"
+end
+
+groups = Array.new
+
+if ARGV.length > 0 
+    while ARGV.length > 0
+        groups << ARGV.shift
+    end    
+else
+    puts("You must specfiy at least one group")
+    exit 0
+end
+groupwho = rpcclient("groupwho", {:options => options})
+groupwho.progress = false
+groupwho.querygroup(:groups => groups).each do |response|
+    puts "* From #{response[:sender]}:"
+    response[:data][:groups].each do |group, users|
+        print "\t#{group}: "
+        users.sort.each do |u|
+            print "#{u} "
+        end
+        print "\n"
+    end
+end
+
+# vi:tabstop=4:expandtab:ai
