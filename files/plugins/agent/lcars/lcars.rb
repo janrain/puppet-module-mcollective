@@ -91,15 +91,15 @@ module MCollective
                         node_entry += line
                         line=file.gets
                         until line[0,1] == "}" || line.nil?
-                            if line.split[0] == 'tag'
-                                node_entry += "\t\ttag => '#{request[:tag]}',\n"
+                            if line.split[0] == 'lcars_tag'
+                                node_entry += "\t\tlcars_tag => '#{request[:tag]}',\n"
                                 matched = true
                             else
                                 node_entry += line 
                             end
                             line = file.gets
                         end
-                        node_entry << "}\n\n"
+                        node_entry << "}\n"
                         output << node_entry
                     else 
                         output << line
@@ -117,6 +117,8 @@ module MCollective
                     File.open(restart_file, "w") do |file|
                         file.puts "Created by MCollective - #{Time.now}\n"
                     end
+                    # restart.txt doesnt' seem to do the trick
+                    %x[/etc/init.d/apache2 restart]
                     reply[:matched] = matched 
                     reply[:output] = "Set tags in #{node_file}"
                 else
