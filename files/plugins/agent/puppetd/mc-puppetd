@@ -122,19 +122,18 @@ elsif command == "runall"
         exit 1
     end
 elsif command == "runonce"
-    puppetd.runonce(:forcerun => @force, :sync => @sync).each do |response|
-        if @sync
+    if @sync
+        puppetd.runonce(:forcerun => @force, :sync => @sync).each do |response|
             puts "* On node #{response[:sender]}"        
             print "\tReturned #{response[:data][:rc]}: "
             puts "Success (No changes)" if response[:data][:rc] == 0
             puts "Success (Changes)" if response[:data][:rc] == 512
             puts "Failed (Errors)" if response[:data][:rc] == 1024
-        else 
-            printrpc response
         end
+    else 
+        printrpc puppetd.runonce(:forcerun => @force, :sync => @sync)
     end
     printrpcstats
-
 else
     printrpc puppetd.send(command)
 
