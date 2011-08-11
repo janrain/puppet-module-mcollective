@@ -9,7 +9,8 @@ class mcollective::install::debian {
     package { "stomp": 
         provider => gem,
         require => Package["ruby", "rubygems"],
-        #ensure => "1.1",
+        ensure => "1.1.9",
+        notify => Service["mcollective"],
     }
 
 
