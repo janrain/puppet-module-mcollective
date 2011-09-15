@@ -8,7 +8,7 @@ define mcollective::client_file ( $source, $prefix = "/usr/local" ) {
         require => Class["mcollective::client::install"],
     }
 
-    $s_base = "puppet://$fileserver/mcollective/plugins"
+    $s_base = "puppet://$fileserver/modules/mcollective/plugins"
 
     file { "${prefix}/bin/${title}": 
 	source => "${s_base}/${source}",
