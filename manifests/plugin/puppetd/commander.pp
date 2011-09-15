@@ -1,7 +1,7 @@
 # class mcollective::plugin::puppetd::commander 
 class mcollective::plugin::puppetd::commander {
     mcollective::client_file { "puppetcommanderd": 
-        source => "puppet:///modules/mcollective/plugins/agent/puppetd/commander/puppetcommanderd",
+        source => "agent/puppetd/commander/puppetcommanderd",
         require => Class["apps::mcollective"],
     }
     file { "/etc/puppetcommander.cfg": 
