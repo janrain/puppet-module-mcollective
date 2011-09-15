@@ -1,11 +1,11 @@
 # class mcollective::plugin::puppetd::commander 
 class mcollective::plugin::puppetd::commander {
     mcollective::client_file { "puppetcommanderd": 
-        source => "puppet:///modules/mcollective/plugins/agent/puppetd/commander/puppetcommanderd",
+        source => "puppet://modules/mcollective/plugins/agent/puppetd/commander/puppetcommanderd",
         require => Class["apps::mcollective"],
     }
     file { "/etc/puppetcommander.cfg": 
-        source => "puppet:///modules/mcollective/plugins/agent/puppetd/commander/puppetcommander.cfg",
+        source => "puppet://modules/mcollective/plugins/agent/puppetd/commander/puppetcommander.cfg",
         alias => "commander_cfg",
     }
     # keep init script happy, create symlink
@@ -15,7 +15,7 @@ class mcollective::plugin::puppetd::commander {
         alias => "commander_link",
     }
     file { "/etc/init.d/puppetcommander":
-        source => "puppet:///modules/mcollective/plugins/agent/puppetd/commander/puppetcommander.init",
+        source => "puppet://modules/mcollective/plugins/agent/puppetd/commander/puppetcommander.init",
         mode => 755,
         alias => "commander_init",
         require => [File["commander_link", "commander_cfg"],Mcollective::Client_file["puppetcommanderd"]],
