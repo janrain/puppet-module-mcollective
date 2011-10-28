@@ -6,6 +6,7 @@ class mcollective::install::debian {
                 provider => gem,
                 ensure => "1.1.9",
                 notify => Service["mcollective"],
+                }
 
         # package { "mcollective":
         # NOTE: This package comes from the puppet repository, which is
