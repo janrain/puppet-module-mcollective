@@ -1,11 +1,11 @@
 
 class mcollective::install::debian {
 
-        $require = Class[apps::ruby]
-        package { "stomp":
+        $require = Class['apps::ruby']
+        package { 'stomp':
+                ensure   => '1.1.9',
                 provider => gem,
-                ensure => "1.1.9",
-                notify => Service["mcollective"],
+                notify   => Service['mcollective'],
                 }
 
         # package { "mcollective":
