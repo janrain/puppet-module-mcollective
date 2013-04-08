@@ -1,9 +1,9 @@
 
 class mcollective::install::debian {
-
-        $require = Class['apps::ruby']
+        #require 'apps:stomp' which makes sure libstomp isn't installed.
+        $require = Class['apps::ruby','apps:stomp']
         package { 'stomp':
-                ensure   => '1.1.9',
+                ensure   => '1.2.8',
                 provider => gem,
                 notify   => Service['mcollective'],
                 }
