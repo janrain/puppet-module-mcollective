@@ -6,9 +6,9 @@ logfile = /dev/null
 loglevel = info
 
 # Plugins 
-<% if has_variable?('mcollective_psk' ) -%>
+<% if @mcollective_psk != nil -%>
 securityprovider = psk
-plugin.psk = <%= mcollective_psk %>
+plugin.psk = <%= @mcollective_psk %>
 
 <% end -%>
 <% if @mcollective_ssl == true -%>
@@ -23,12 +23,12 @@ plugin.activemq.pool.1.ssl.ca = <%= @mcollective_activemq_ssl_ca %>
 plugin.activemq.pool.1.ssl.key = <%= @mcollective_activemq_ssl_key %>
 plugin.activemq.pool.1.ssl.cert = <%= @mcollective_activemq_ssl_cert %>
 
-<% elsif has_variable?('mcollective_stomp_host') -%>
+<% elsif @mcollective_stomp_host != nil -%>
 connector = stomp
-plugin.stomp.host = <%= mcollective_stomp_host %>
-plugin.stomp.port = <%= mcollective_stomp_port %>
-plugin.stomp.user = <%= mcollective_stomp_user %>
-plugin.stomp.password = <%= mcollective_stomp_password %>
+plugin.stomp.host = <%= @mcollective_stomp_host %>
+plugin.stomp.port = <%= @mcollective_stomp_port %>
+plugin.stomp.user = <%= @mcollective_stomp_user %>
+plugin.stomp.password = <%= @mcollective_stomp_password %>
 
 <% end -%>
 
