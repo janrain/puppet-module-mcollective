@@ -2,7 +2,8 @@
 class mcollective::plugin::puppetd::commander {
     mcollective::client_file { "puppetcommanderd": 
         source => "agent/puppetd/commander/puppetcommanderd",
-        require => Class["apps::mcollective"],
+        ## since this is only called for server that need activemq, require activemq.
+        require => Class["apps::mcollective",'apps::activemq'],
     }
     file { "/etc/puppetcommander.cfg": 
         source => "puppet:///modules/mcollective/plugins/agent/puppetd/commander/puppetcommander.cfg",
