@@ -11,14 +11,14 @@ securityprovider = psk
 plugin.psk = <%= @mcollective_psk %>
 
 <% end -%>
-<% if @mcollective_ssl == true -%>
+<% if @mcollective_connector == "activemq" -%>
 connector = activemq
 plugin.activemq.pool.size = 1
 plugin.activemq.pool.1.host = <%= @mcollective_activemq_host %>
 plugin.activemq.pool.1.port = <%= @mcollective_activemq_port %>
 plugin.activemq.pool.1.user = <%= @mcollective_activemq_user %>
 plugin.activemq.pool.1.password = <%= @mcollective_activemq_password %>
-plugin.activemq.pool.1.ssl = true
+plugin.activemq.pool.1.ssl = <%= @mcollective_ssl %>
 plugin.activemq.pool.1.ssl.ca = <%= @mcollective_activemq_ssl_ca %>
 plugin.activemq.pool.1.ssl.key = <%= @mcollective_activemq_ssl_key %>
 plugin.activemq.pool.1.ssl.cert = <%= @mcollective_activemq_ssl_cert %>
