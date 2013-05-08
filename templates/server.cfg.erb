@@ -15,7 +15,7 @@ plugin.psk = <%= @mcollective_psk %>
 <% if @mcollective_connector == "activemq" -%>
 connector = activemq
 plugin.activemq.pool.size = 1
-plugin.activemq.pool.1.host = <%= @mcollective_activemq_host %>
+plugin.activemq.pool.1.host = <%= @mcollective_activemq_host_server %>
 plugin.activemq.pool.1.port = <%= @mcollective_activemq_port %>
 plugin.activemq.pool.1.user = <%= @mcollective_activemq_user %>
 plugin.activemq.pool.1.password = <%= @mcollective_activemq_password %>
